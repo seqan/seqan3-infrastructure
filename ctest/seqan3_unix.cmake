@@ -102,7 +102,7 @@ set ($ENV{LC_MESSAGES} "en_EN")
 # WARNING then the changed files feature won't work, so maybe not.
 
 # The Git checkout goes here.
-set (CTEST_SOURCE_ROOT_DIRECTORY "$ENV{WORKSPACE}/checkout-$ENV{GIT_BRANCH}")
+set (CTEST_SOURCE_ROOT_DIRECTORY "$ENV{WORKSPACE}/checkout-$ENV{GIT_BRANCH}/test")
 set (CTEST_SOURCE_DIRECTORY "${CTEST_SOURCE_ROOT_DIRECTORY}")
 
 # Set build directory and directory to run tests in.
@@ -241,6 +241,8 @@ CTEST_TEST      (PARALLEL_LEVEL $ENV{THREADS} RETURN_VALUE _TEST_RES)
 # if (${CTEST_BUILD_NAME} MATCHES ".*coverage.*")
 #   CTEST_COVERAGE(BUILD "${CTEST_BINARY_TEST_DIRECTORY}")
 # endif (${CTEST_BUILD_NAME} MATCHES ".*coverage.*")
+
+CTEST_SUBMIT ()
 
 # indicate errors
 if (${_BUILD_ERRORS} GREATER 0 OR ${_BUILD_WARNINGS} GREATER 0 OR NOT ${_CONFIG_RES} EQUAL 0 OR NOT ${_TEST_RES} EQUAL 0)
