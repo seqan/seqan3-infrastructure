@@ -216,7 +216,7 @@ message(" -- Start dashboard $ENV{MODEL} - ${CTEST_BUILD_NAME} --")
 #     append sth to TRAK?
 # endif (${CTEST_BUILD_NAME} MATCHES ".*memcheck.*")
 
-CTEST_START ($ENV{MODEL} TRACK "$ENV{MODEL}-$ENV{GIT_BRANCH}")
+CTEST_START ($ENV{MODEL})
 
 # Update from repository, configure, build, test, submit.  These commands will
 # get all necessary information from the CTEST_* variables set above.
