@@ -17,6 +17,7 @@
 # HOSTBITS       - [optional] The bits of the host platform: defaults to 64.
 # THREADS        - [optional] The number of processor to use for build: defaults to 4
 # DISABLE_CEREAL - [optional] Set to "ON" to switch off compilation with CEREAL. Default to "OFF" if not set.
+# SITE_NAME      - [optional] The site name to display on cdash. Defaults to uname -n if not set.
 #
 # Windows specific variables
 # WIN_CTEST_GENERATOR          - One of Visual Studio 14 2015, ...
@@ -69,9 +70,13 @@ set (CTEST_BUILD_FLAGS "${CTEST_BUILD_FLAGS} -j $ENV{THREADS}")
 # Set CTest variables describing the build.
 # ------------------------------------------------------------
 
-# determine full host name
-find_program(HOSTNAME_CMD NAMES uname)
-EXECUTE_PROCESS(COMMAND ${HOSTNAME_CMD} -n OUTPUT_VARIABLE FULL_HOSTNAME OUTPUT_STRIP_TRAILING_WHITESPACE)
+if (NOT DEFINED ENV{SITE_NAME})
+    # determine full host name
+    find_program(HOSTNAME_CMD NAMES uname)
+    EXECUTE_PROCESS(COMMAND ${HOSTNAME_CMD} -n OUTPUT_VARIABLE FULL_HOSTNAME OUTPUT_STRIP_TRAILING_WHITESPACE)
+else ()
+    set (FULL_HOSTNAME "$ENV{SITE_NAME}")
+endif ()
 
 # This project name is used for the CDash submission.
 SET (CTEST_PROJECT_NAME "SeqAn3")
