@@ -150,7 +150,7 @@ CTEST_EMPTY_BINARY_DIRECTORY (${CTEST_BINARY_DIRECTORY})
 #   CMAKE_BUILD_TYPE -- The build type.  We set this to Release since
 #     the compiler tries its best to understand the code and unearths
 #     some warning types only in this build type.
-
+#   TODO Remove adding CMAKE_CXX_FLAGS after PR#117 is merged.
 # Always write out the generator and some other settings.
 file (WRITE "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt" "
       CMAKE_GENERATOR:INTERNAL=${CTEST_CMAKE_GENERATOR}
@@ -159,6 +159,7 @@ file (WRITE "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt" "
       #COVERAGE_COMMAND:FILEPATH=${CTEST_COVERAGE_COMMAND}
       MODEL:STRING=$ENV{MODEL}
       CTEST_TEST_TIMEOUT:STRING=${CTEST_TEST_TIMEOUT}
+      CMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS} -pthread
       ")
 
 # if (($ENV{PLATFORM} MATCHES "win") AND (NOT SEQAN_CTEST_GENERATOR_TOOLSET MATCHES "none"))
