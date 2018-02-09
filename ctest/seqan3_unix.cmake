@@ -8,14 +8,15 @@
 #
 # Environment Variables set from outside:
 #
-# BUILDNAME  - A descriptive name of the triggered build.
-# PLATFORM   - A string of value unix/windows
-# GIT_BRANCH - The target branch name that is tested.
-# BITS       - The target architecture to build for.
-# MODEL      - The deployment model: continues, nightly, experimental
-# WORKSPACE  - The workspace with the checkout-$ENV{GIT_BRANCH} and build-$ENV{GIT_BRANCH} directories
-# HOSTBITS   - [optional] The bits of the host platform: defaults to 64.
-# THREADS    - [optional] The number of processor to use for build: defaults to 4
+# BUILDNAME      - A descriptive name of the triggered build.
+# PLATFORM       - A string of value unix/windows
+# GIT_BRANCH     - The target branch name that is tested.
+# BITS           - The target architecture to build for.
+# MODEL          - The deployment model: continues, nightly, experimental
+# WORKSPACE      - The workspace with the checkout-$ENV{GIT_BRANCH} and build-$ENV{GIT_BRANCH} directories
+# HOSTBITS       - [optional] The bits of the host platform: defaults to 64.
+# THREADS        - [optional] The number of processor to use for build: defaults to 4
+# DISABLE_CEREAL - [optional] Set to "ON" to switch off compilation with CEREAL. Default to "OFF" if not set.
 #
 # Windows specific variables
 # WIN_CTEST_GENERATOR          - One of Visual Studio 14 2015, ...
@@ -49,6 +50,10 @@ endif (NOT DEFINED ENV{GIT_BRANCH})
 if (NOT DEFINED ENV{MODEL})
     set (ENV{MODEL} "Experimental")
 endif (NOT DEFINED ENV{MODEL})
+
+if (NOT DEFINED ENV{DISABLE_CEREAL})
+    set (ENV{DISABLE_CEREAL} "OFF")
+endif ()
 
 # ---------------------------------------------------------------------------
 # OPTIONAL VARIABLES
@@ -160,6 +165,7 @@ file (WRITE "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt" "
       MODEL:STRING=$ENV{MODEL}
       CTEST_TEST_TIMEOUT:STRING=${CTEST_TEST_TIMEOUT}
       CMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS} -pthread
+      NO_CEREAL:BOOL=$ENV{DISABLE_CEREAL}
       ")
 
 # if (($ENV{PLATFORM} MATCHES "win") AND (NOT SEQAN_CTEST_GENERATOR_TOOLSET MATCHES "none"))
