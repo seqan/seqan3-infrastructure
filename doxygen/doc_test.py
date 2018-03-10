@@ -20,12 +20,13 @@ if __name__ == '__main__':
     process = subprocess.Popen([myargs.get("-e"), myargs.get("-i")], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     cnt = 0
     for line in process.stdout:
-        if "warning:" in line and not regexp.search(line):
+        _line = line.decode('utf-8')
+        if "warning:" in _line and not regexp.search(_line):
             cnt = cnt + 1
-            print line
+            print(line)
 
     if cnt != 0:
-        print "Detected %d warnings!" % cnt
+        print("Detected %d warnings!" % (cnt))
         sys.exit(1)
 
     sys.exit(0)

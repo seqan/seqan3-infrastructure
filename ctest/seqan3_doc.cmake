@@ -14,6 +14,7 @@
 # WORKSPACE      - The workspace with the checkout-$ENV{GIT_BRANCH} and build-$ENV{GIT_BRANCH} directories
 # THREADS        - [optional] The number of processor to use for build: defaults to 4
 # SITE_NAME      - [optional] The site name to display on cdash. Defaults to uname -n if not set.
+# DOC            - [optional] The doc to build. Possible values: [user/devel]. If not specified it builds both.
 
 CMAKE_MINIMUM_REQUIRED (VERSION 3.0)
 cmake_policy (SET CMP0011 NEW)  # Suppress warning about PUSH/POP policy change.
@@ -23,7 +24,7 @@ cmake_policy (SET CMP0011 NEW)  # Suppress warning about PUSH/POP policy change.
 # ---------------------------------------------------------------------------
 
 if (NOT DEFINED ENV{BUILDNAME})
-    message (FATAL_ERROR "No BUILDNAME defined (can be arbitary STRING).")
+    message (FATAL_ERROR "No BUILDNAME defined (can be arbitrary STRING).")
 endif (NOT DEFINED ENV{BUILDNAME})
 #
 # if (NOT DEFINED ENV{PLATFORM})
@@ -56,6 +57,16 @@ if (NOT DEFINED ENV{THREADS})
 endif ()
 
 set (CTEST_BUILD_FLAGS "${CTEST_BUILD_FLAGS} -j $ENV{THREADS}")
+
+# Set which of the documentation should be built.
+set(SEQAN3_USER_DOC "ON")
+set(SEQAN3_DEV_DOC "ON")
+
+if ("$ENV{DOC}" STREQUAL "user")
+    set(SEQAN3_DEV_DOC "OFF")
+elseif ("$ENV{DOC}" STREQUAL "devel")
+    set(SEQAN3_USER_DOC "OFF")
+endif ()
 
 # ------------------------------------------------------------
 # Set CTest variables describing the build.
@@ -145,6 +156,8 @@ file (WRITE "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt" "
       MODEL:STRING=$ENV{MODEL}
       CTEST_TEST_TIMEOUT:STRING=${CTEST_TEST_TIMEOUT}
       SEQAN3_INCLUDE_DIR:INTERNAL=${SEQAN3_INCLUDE_DIR}
+      SEQAN3_USER_DOC:BOOL=${SEQAN3_USER_DOC}
+      SEQAN3_DEV_DOC:BOOL=${SEQAN3_DEV_DOC}
       ")
 
 # if (($ENV{PLATFORM} MATCHES "win") AND (NOT SEQAN_CTEST_GENERATOR_TOOLSET MATCHES "none"))
