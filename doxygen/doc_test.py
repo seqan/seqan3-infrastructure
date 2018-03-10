@@ -1,5 +1,6 @@
 import subprocess
 import sys
+import re
 
 def getopts(argv):
     opts = {}  # Empty dictionary to store key-value pairs.
@@ -12,10 +13,14 @@ def getopts(argv):
 if __name__ == '__main__':
     from sys import argv
     myargs = getopts(argv)
+
+    '''Use regex to filter CLANG option warnings'''
+    regexp = re.compile(r'(CLANG_OPTIONS|CLANG_ASSISTED_PARSING)')
+
     process = subprocess.Popen([myargs.get("-e"), myargs.get("-i")], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     cnt = 0
     for line in process.stdout:
-        if "warning:" in line:
+        if "warning:" in line and not regexp.search(line):
             cnt = cnt + 1
             print line
 

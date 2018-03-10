@@ -2,14 +2,23 @@
 cmake_minimum_required (VERSION 3.0.0)
 
 # Name of project
-project (seqan3_documentation)
+project (seqan3_documentation NONE)
 
 ### Find seqan3
-message (STATUS "Searching for seqan3.")
-find_package(SeqAn3)
+if (NOT SEQAN3_INCLUDE_DIR)
+    message (STATUS "Searching for seqan3.")
+    find_package(SeqAn3)
 
-if (NOT SeqAn3_FOUND)
-    set (SEQAN3_INCLUDE_DIR "/Users/rmaerker/Development/seqan3/seqan3-src/include/seqan3")
+    foreach(_include_dir in LISTS ${SEQAN3_INCLUDE_DIRS})
+        if (EXISTS "${_include_dir/seqan3/version.hpp}")
+            set(SEQAN3_INCLUDE_DIR "${_include_dir}")
+            break()
+        endif ()
+    endforeach ()
+endif ()
+
+if (NOT EXISTS "${SEQAN3_INCLUDE_DIR}/seqan3/version.hpp")
+    message (FATAL_ERROR "Could not find SeqAn3. Not building documentation.")
 endif ()
 
 ### Find doxygen and dependency to DOT tool
