@@ -14,6 +14,7 @@
 # BITS           - The target architecture to build for.
 # MODEL          - The deployment model: continues, nightly, experimental
 # WORKSPACE      - The workspace with the checkout-$ENV{GIT_BRANCH} and build-$ENV{GIT_BRANCH} directories
+# TEST_MODEL     - The test model to build and execute. One of 'unit', 'performance', 'mem', 'cov'.
 # HOSTBITS       - [optional] The bits of the host platform: defaults to 64.
 # THREADS        - [optional] The number of processor to use for build: defaults to 4
 # DISABLE_CEREAL - [optional] Set to "ON" to switch off compilation with CEREAL. Default to "OFF" if not set.
@@ -22,7 +23,6 @@
 # Windows specific variables
 # WIN_CTEST_GENERATOR          - One of Visual Studio 14 2015, ...
 # WIN_CTEST_GENERATOR_TOOLSET  - [optional] One of: none, clang, intel, defaults to none
-
 
 CMAKE_MINIMUM_REQUIRED (VERSION 3.0)
 cmake_policy (SET CMP0011 NEW)  # Suppress warning about PUSH/POP policy change.
@@ -33,24 +33,28 @@ cmake_policy (SET CMP0011 NEW)  # Suppress warning about PUSH/POP policy change.
 
 if (NOT DEFINED ENV{BUILDNAME})
     message (FATAL_ERROR "No BUILDNAME defined (can be arbitary STRING).")
-endif (NOT DEFINED ENV{BUILDNAME})
+endif ()
 
 if (NOT DEFINED ENV{PLATFORM})
     message (FATAL_ERROR "No Platform defined (should be unix or windows).")
-endif (NOT DEFINED ENV{PLATFORM})
+endif ()
 
 if (NOT DEFINED ENV{GIT_BRANCH})
     message (FATAL_ERROR "No GIT_BRANCH defined (either master/develop for nightly or the GITHUB_PR_NUMBER if CI).")
-endif (NOT DEFINED ENV{GIT_BRANCH})
+endif ()
 
 # TODO: Only support 64 bits at the moment.
 # if (NOT DEFINED ENV{BITS})
 #     message (FATAL_ERROR "No BITS defined (target bit size, should be 32 or 64)")
-# endif (NOT DEFINED ENV{BITS})
+# endif ()
 
 if (NOT DEFINED ENV{MODEL})
     set (ENV{MODEL} "Experimental")
-endif (NOT DEFINED ENV{MODEL})
+endif ()
+
+if (NOT DEFINED ENV{TEST_MODEL})
+    message(FATAL_ERROR "No TEST_MODEL defined. Must be one of [unit, performance, mem, cov]")
+endif ()
 
 if (NOT DEFINED ENV{DISABLE_CEREAL})
     set (ENV{DISABLE_CEREAL} "OFF")
@@ -93,7 +97,7 @@ set (CTEST_DROP_SITE_CDASH TRUE)
 set (CTEST_TIMEOUT 600)
 if (${CTEST_BUILD_NAME} MATCHES ".*memcheck.*")
     set (CTEST_TIMEOUT 7200)
-endif (${CTEST_BUILD_NAME} MATCHES ".*memcheck.*")
+endif ()
 
 # Increase reported warning and error count.
 set (CTEST_CUSTOM_MAXIMUM_NUMBER_OF_ERRORS   1000)
@@ -105,14 +109,18 @@ set ($ENV{LC_MESSAGES} "en_EN")
 # Set CTest variables for directories.
 # ------------------------------------------------------------
 
-# In theory one checkout for develop and master each would be enough
-# but since multiple scripts might run in parallel they might conflict
-# TODO(h4nn3s) move git clone and update into the sh script where locking
-# can be used to prevent multiple checkout dirs
-# WARNING then the changed files feature won't work, so maybe not.
+# Check different paths to execute tests.
+
+if ("$ENV{TEST_MODEL}" STREQUAL "unit")
+    set (_seqan3_src_dir "test/unit")
+elseif ("$ENV{TEST_MODEL}" STREQUAL "performance")
+    set (_seqan3_src_dir "test/performance")
+else ()
+    message (FATAL_ERROR "Not supporting TEST_MODEL $ENV{TEST_MODEL} yet.")
+endif ()
 
 # The Git checkout goes here.
-set (CTEST_SOURCE_ROOT_DIRECTORY "$ENV{WORKSPACE}/checkout-$ENV{GIT_BRANCH}/test")
+set (CTEST_SOURCE_ROOT_DIRECTORY "$ENV{WORKSPACE}/checkout-$ENV{GIT_BRANCH}/${_seqan3_src_dir}")
 set (CTEST_SOURCE_DIRECTORY "${CTEST_SOURCE_ROOT_DIRECTORY}")
 
 # Set build directory and directory to run tests in.
@@ -169,7 +177,7 @@ file (WRITE "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt" "
       #COVERAGE_COMMAND:FILEPATH=${CTEST_COVERAGE_COMMAND}
       MODEL:STRING=$ENV{MODEL}
       CTEST_TEST_TIMEOUT:STRING=${CTEST_TEST_TIMEOUT}
-      CMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS} -pthread
+      #CMAKE_CXX_FLAGS:STRING=${CMAKE_CXX_FLAGS} -pthread
       SEQAN3_NO_CEREAL:BOOL=$ENV{DISABLE_CEREAL}
       ")
 
@@ -183,7 +191,7 @@ file (WRITE "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt" "
 if (DEFINED ENV{SEQAN_CMAKE_FIND_ROOT_PATH})
   file (APPEND "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt" "CMAKE_FIND_ROOT_PATH:INTERNAL=$ENV{SEQAN_CMAKE_FIND_ROOT_PATH}
 ")
-endif (DEFINED ENV{SEQAN_CMAKE_FIND_ROOT_PATH})
+endif ()
 
 # When running memory checks then generate debug symbols, otherwise compile
 # in Release mode.
@@ -193,13 +201,13 @@ endif (DEFINED ENV{SEQAN_CMAKE_FIND_ROOT_PATH})
 # else (${CTEST_BUILD_NAME} MATCHES ".*memcheck.*")
 #   file (APPEND "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt" "
 # CMAKE_BUILD_TYPE:STRING=Release")
-# endif (${CTEST_BUILD_NAME} MATCHES ".*memcheck.*")
+# endif ()
 #
 # # Allow disabling of library search in 64 bit dirs.
 # if (SEQAN_FIND_LIBRARY_USE_LIB64_PATHS_OFF)
 #     file (APPEND "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt" "
 # SEQAN_FIND_LIBRARY_USE_LIB64_PATHS_OFF:BOOL=ON")
-# endif (SEQAN_FIND_LIBRARY_USE_LIB64_PATHS_OFF)
+# endif ()
 
 # ------------------------------------------------------------
 # Suppress certain warnings.
@@ -225,7 +233,7 @@ message(" -- Start dashboard $ENV{MODEL} - ${CTEST_BUILD_NAME} --")
 
 # if (${CTEST_BUILD_NAME} MATCHES ".*memcheck.*")
 #     append sth to TRAK?
-# endif (${CTEST_BUILD_NAME} MATCHES ".*memcheck.*")
+# endif ()
 
 CTEST_START ($ENV{MODEL})
 
@@ -246,13 +254,13 @@ CTEST_TEST      (PARALLEL_LEVEL $ENV{THREADS} RETURN_VALUE _TEST_RES)
 # Run memory checks if configured to do so.
 # if (${CTEST_BUILD_NAME} MATCHES ".*memcheck.*")
 #   CTEST_MEMCHECK (BUILD "${CTEST_BINARY_TEST_DIRECTORY}")
-# endif (${CTEST_BUILD_NAME} MATCHES ".*memcheck.*")
+# endif ()
 
 # TODO activate me
 # Run coverage checks if configured to do so.
 # if (${CTEST_BUILD_NAME} MATCHES ".*coverage.*")
 #   CTEST_COVERAGE(BUILD "${CTEST_BINARY_TEST_DIRECTORY}")
-# endif (${CTEST_BUILD_NAME} MATCHES ".*coverage.*")
+# endif ()
 
 CTEST_SUBMIT ()
 
