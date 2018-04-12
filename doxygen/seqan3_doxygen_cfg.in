@@ -2104,7 +2104,9 @@ PREDEFINED             = "CEREAL_SERIALIZE_FUNCTION_NAME=serialize" \
                          "CEREAL_SAVE_FUNCTION_NAME=save" \
                          "CEREAL_LOAD_MINIMAL_FUNCTION_NAME=load_minimal" \
                          "CEREAL_SAVE_MINIMAL_FUNCTION_NAME=save_minimal" \
+                         "SEQAN3_DOXYGEN_ONLY(x)= x" \
                          "${SEQAN3_DOXYGEN_PREDEFINED_NDEBUG}"
+
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then this
 # tag can be used to specify a list of macro names that should be expanded. The
