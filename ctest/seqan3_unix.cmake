@@ -14,7 +14,7 @@
 # BITS           - The target architecture to build for.
 # MODEL          - The deployment model: continues, nightly, experimental
 # WORKSPACE      - The workspace with the checkout-$ENV{GIT_BRANCH} and build-$ENV{GIT_BRANCH} directories
-# TEST_MODEL     - The test model to build and execute. One of 'unit', 'performance', 'mem', 'cov'.
+# TEST_MODEL     - The test model to build and execute. One of 'unit', 'performance', 'mem', 'cov', 'header'.
 # HOSTBITS       - [optional] The bits of the host platform: defaults to 64.
 # THREADS        - [optional] The number of processor to use for build: defaults to 4
 # DISABLE_CEREAL - [optional] Set to "ON" to switch off compilation with CEREAL. Default to "OFF" if not set.
@@ -53,7 +53,7 @@ if (NOT DEFINED ENV{MODEL})
 endif ()
 
 if (NOT DEFINED ENV{TEST_MODEL})
-    message(FATAL_ERROR "No TEST_MODEL defined. Must be one of [unit, performance, mem, cov]")
+    message(FATAL_ERROR "No TEST_MODEL defined. Must be one of [unit, performance, mem, cov, header]")
 endif ()
 
 if (NOT DEFINED ENV{DISABLE_CEREAL})
@@ -115,6 +115,8 @@ if ("$ENV{TEST_MODEL}" STREQUAL "unit")
     set (_seqan3_src_dir "test/unit")
 elseif ("$ENV{TEST_MODEL}" STREQUAL "performance")
     set (_seqan3_src_dir "test/performance")
+elseif ("$ENV{TEST_MODEL}" STREQUAL "header")
+    set (_seqan3_src_dir "test/header")
 else ()
     message (FATAL_ERROR "Not supporting TEST_MODEL $ENV{TEST_MODEL} yet.")
 endif ()
