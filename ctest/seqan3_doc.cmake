@@ -111,7 +111,7 @@ set ($ENV{LC_MESSAGES} "en_EN")
 set (SEQAN3_INCLUDE_DIR "$ENV{WORKSPACE}/checkout-$ENV{GIT_BRANCH}/include")
 
 # The Doxygen checkout goes here.
-set (CTEST_SOURCE_ROOT_DIRECTORY "$ENV{WORKSPACE}/seqan3-infrastructure/doxygen/")
+set (CTEST_SOURCE_ROOT_DIRECTORY "$ENV{WORKSPACE}/test/documentation")
 set (CTEST_SOURCE_DIRECTORY "${CTEST_SOURCE_ROOT_DIRECTORY}")
 
 # Set build directory and directory to run tests in.
