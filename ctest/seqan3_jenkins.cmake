@@ -8,15 +8,16 @@
 #
 # Environment Variables set from outside:
 #
-# BUILDNAME      - A descriptive name of the triggered build.
-# PLATFORM       - A string of value unix/windows
-# MODEL          - The deployment model: continuous, nightly, experimental
-# WORKSPACE      - The workspace with the checkout-$ENV{GIT_BRANCH} and build-$ENV{GIT_BRANCH} directories
-# TEST_MODEL     - The test model to build and execute. One of 'unit', 'performance', 'mem', 'cov', 'header'.
-# HOSTBITS       - [optional] The bits of the host platform: defaults to 64.
-# THREADS        - [optional] The number of processor to use for build: defaults to 4
-# DISABLE_CEREAL - [optional] Set to "ON" to switch off compilation with CEREAL. Default to "OFF" if not set.
-# SITE_NAME      - [optional] The site name to display on cdash. Defaults to uname -n if not set.
+# BUILDNAME        - A descriptive name of the triggered build.
+# PLATFORM         - A string of value unix/windows
+# MODEL            - The deployment model: continuous, nightly, experimental
+# WORKSPACE        - The workspace with the checkout-$ENV{GIT_BRANCH} and build-$ENV{GIT_BRANCH} directories
+# TEST_MODEL       - The test model to build and execute. One of 'unit', 'performance', 'mem', 'cov', 'header'.
+# HOSTBITS         - [optional] The bits of the host platform: defaults to 64.
+# THREADS          - [optional] The number of processor to use for build: defaults to 4
+# DISABLE_CEREAL   - [optional] Set to "ON" to switch off compilation with CEREAL. Default to "OFF" if not set.
+# CTEST_BUILD_TYPE - [optional] Set to "Release" or "Debug". Default is "Release"
+# SITE_NAME        - [optional] The site name to display on cdash. Defaults to uname -n if not set.
 #
 # Windows specific variables
 # WIN_CTEST_GENERATOR          - One of Visual Studio 14 2015, ...
@@ -47,6 +48,10 @@ endif ()
 
 if (NOT DEFINED ENV{DISABLE_CEREAL})
     set (ENV{DISABLE_CEREAL} "OFF")
+endif ()
+
+if (NOT DEFINED ENV{CTEST_BUILD_TYPE})
+    set (ENV{CTEST_BUILD_TYPE} "Release")
 endif ()
 
 # ---------------------------------------------------------------------------
@@ -163,7 +168,7 @@ CTEST_EMPTY_BINARY_DIRECTORY (${CTEST_BINARY_DIRECTORY})
 # Always write out the generator and some other settings.
 file (WRITE "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt" "
       CMAKE_GENERATOR:INTERNAL=${CTEST_CMAKE_GENERATOR}
-      CMAKE_BUILD_TYPE:STRING=Release
+      CMAKE_BUILD_TYPE:STRING=$ENV{CTEST_BUILD_TYPE}
       #MEMORYCHECK_COMMAND:FILEPATH=${CTEST_MEMORYCHECK_COMMAND}
       #MEMORYCHECK_COMMAND_OPTIONS:STRING=--supressions=${CTEST_SOURCE_ROOT_DIRECTORY}/util/valgrind/seqan.supp
       #COVERAGE_COMMAND:FILEPATH=${CTEST_COVERAGE_COMMAND}
