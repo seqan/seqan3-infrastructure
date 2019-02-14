@@ -150,9 +150,6 @@ set (CTEST_CMAKE_GENERATOR "Unix Makefiles")
 # Preparation of the binary directory.
 # ------------------------------------------------------------
 
-# Clear the binary directory to avoid problems.
-CTEST_EMPTY_BINARY_DIRECTORY (${CTEST_BINARY_DIRECTORY})
-
 # Write the initial cache to use for the binary tree.  Be careful to
 # escape any quotes inside of this string if you use it.  This is the
 # only way to communicate with the cmake process forked by ctest.
