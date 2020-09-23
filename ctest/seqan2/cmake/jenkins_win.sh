@@ -81,15 +81,15 @@ if ($ENV{PLATFORM} MATCHES "win")
     if (NOT DEFINED ENV{WIN_CTEST_GENERATOR})
        message (FATAL_ERROR "No ctest generator specified: e.g.: Visual Studio 14 2015")
     endif ()
-    
+
     if (DEFINED ENV{WIN_CTEST_GENERATOR_TOOLSET})
         set (SEQAN_CTEST_GENERATOR_TOOLSET "$ENV{WIN_CTEST_GENERATOR_TOOLSET}")
     else ()
         set (SEQAN_CTEST_GENERATOR_TOOLSET "none")
     endif ()
-    
+
     set (SEQAN_CTEST_GENERATOR $ENV{WIN_CTEST_GENERATOR})
-    
+
     # ---------------------------------------------------------------------------
     # Set SEQAN_CTEST_GENERATOR_SHORT and CTEST_BUILD_NAME from the
     # ${SEQAN_CTEST_*} variables.  On Unix, we use CTEST_GENERATOR_SHORT to
@@ -99,7 +99,9 @@ if ($ENV{PLATFORM} MATCHES "win")
     if (SEQAN_CTEST_GENERATOR MATCHES "Visual Studio")
       # Set target bit width into generator if 64 bit.
         if ("$ENV{BITS}" EQUAL "64")
-            set (SEQAN_CTEST_GENERATOR "${SEQAN_CTEST_GENERATOR} Win64")
+            if (NOT SEQAN_CTEST_GENERATOR MATCHES "16")
+                set (SEQAN_CTEST_GENERATOR "${SEQAN_CTEST_GENERATOR} Win64")
+            endif ()
         endif ()
         # Determine short generator name.
         if (SEQAN_CTEST_GENERATOR MATCHES "Visual Studio.*")
@@ -238,13 +240,13 @@ file (WRITE "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt" "
       SEQAN_ENABLE_CUDA:BOOL=OFF
       SEQAN_DEFINITIONS:INTERNAL=-DSEQAN_IGNORE_MISSING_OPENMP=1;
       ")
-      
+
 if (($ENV{PLATFORM} MATCHES "win") AND (NOT SEQAN_CTEST_GENERATOR_TOOLSET MATCHES "none"))
     file (APPEND "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt" "
           CMAKE_GENERATOR_TOOLSET:INTERNAL=${CTEST_CMAKE_GENERATOR_TOOLSET}
           ")
 endif ()
-    
+
 # Give CMAKE_FIND_ROOT_PATH to cmake process.
 if (DEFINED ENV{SEQAN_CMAKE_FIND_ROOT_PATH})
   file (APPEND "${CTEST_BINARY_DIRECTORY}/CMakeCache.txt" "CMAKE_FIND_ROOT_PATH:INTERNAL=$ENV{SEQAN_CMAKE_FIND_ROOT_PATH}
