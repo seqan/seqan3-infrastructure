@@ -17,11 +17,9 @@ export SEQAN_WIN_CONTRIB_DIRECTORY="$WORKSPACE/seqan-contrib"
 # Add zlib and bzip contrib.
 echo "Download zlib and bzip contribs."
 curl http://ftp.seqan.de/contribs/seqan-contrib-$WIN_SEQAN_CONTRIB_VERSION-x64.zip -o seqan-contrib-$WIN_SEQAN_CONTRIB_VERSION-x64.zip
-curl http://ftp.seqan.de/contribs/seqan-contrib-$WIN_SEQAN_CONTRIB_VERSION-x86.zip -o seqan-contrib-$WIN_SEQAN_CONTRIB_VERSION-x86.zip
 
 echo "Extract zlib and bzip contribs."
 unzip -qq seqan-contrib-$WIN_SEQAN_CONTRIB_VERSION-x64.zip
-unzip -qq seqan-contrib-$WIN_SEQAN_CONTRIB_VERSION-x86.zip
 
 echo "DONE."
 
