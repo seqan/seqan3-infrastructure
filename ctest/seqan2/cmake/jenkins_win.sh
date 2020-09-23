@@ -320,6 +320,8 @@ if (${CTEST_BUILD_NAME} MATCHES ".*coverage.*")
   CTEST_COVERAGE(BUILD "${CTEST_BINARY_TEST_DIRECTORY}")
 endif (${CTEST_BUILD_NAME} MATCHES ".*coverage.*")
 
+CTEST_SUBMIT()
+
 # indicate errors
 if (${_BUILD_ERRORS} GREATER 0 OR ${_BUILD_WARNINGS} GREATER 0 OR NOT ${_CONFIG_RES} EQUAL 0 OR NOT ${_TEST_RES} EQUAL 0)
   message(STATUS "build errors: ${_BUILD_ERRORS}; build warnings: ${_BUILD_WARNINGS}; config errors: ${_CONFIG_RES}; test failure: ${_TEST_RES}")
