@@ -70,7 +70,7 @@ endif ()
 if ($ENV{PLATFORM} MATCHES "unix")
     set (CTEST_BUILD_FLAGS "${CTEST_BUILD_FLAGS} -j $ENV{THREADS}")
 else()
-    set (CTEST_BUILD_FLAGS "${CTEST_BUILD_FLAGS} /m:$ENV{THREADS}")
+    set (CTEST_BUILD_FLAGS "${CTEST_BUILD_FLAGS} --parallel $ENV{THREADS}")
 endif()
 
 # ------------------------------------------------------------
