@@ -1,0 +1,8 @@
+[Unit]
+Description=Run SeqAn3 nightlies every day
+
+[Timer]
+OnCalendar=1:01
+
+[Install]
+WantedBy=timers.target
