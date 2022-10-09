@@ -1,5 +1,0 @@
-[Unit]
-Description=SeqAn3 nightly builds
-
-[Service]
-ExecStart=/home/seiler/.config/systemd/user/seqan3_nightly.sh

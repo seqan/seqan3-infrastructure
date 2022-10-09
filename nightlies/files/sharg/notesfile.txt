@@ -1,0 +1,2 @@
+Today's compiler build log: https://docs.seqan.de/seqan/develop_cdash_log/compiler_log.txt.gz
+Today's test log: https://docs.seqan.de/seqan/develop_cdash_log/sharg_log.txt.gz

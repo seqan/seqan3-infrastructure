@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+SYSROOT="/scratch/local/seiler/nightly-builds/nightly_compiler/gcc-11-git"
+GCC=$SYSROOT/bin/gcc-11-git
+
+export LD_LIBRARY_PATH=$SYSROOT/lib64:$LD_LIBRARY_PATH
+if [[ "$@" = "-v" ]] || [[ "$@" = "--version" ]]; then
+    exec "$GCC" "$@"
+    exit 0
+fi
+rpathflags="-Wl,-rpath -Wl,$SYSROOT/lib64"
+exec "$GCC" $rpathflags "$@"
